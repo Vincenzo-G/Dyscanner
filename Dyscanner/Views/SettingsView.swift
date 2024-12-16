@@ -9,36 +9,38 @@ import SwiftUI
 
 struct SettingsView: View {
     @EnvironmentObject var settings: Settings
-    @State private var fontSize: Double = 25
-    @State private var highContrast: Bool = false
-    @State private var showInfo: Bool = false
     @Environment(\.presentationMode) var presentationMode
-
+    @State private var showInfo: Bool = false
+    
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("Accessibility")) {
-                    Toggle("High Contrast", isOn: $highContrast)
+                Section(header: Text("Accessibility").foregroundColor(settings.highContrast ? Color.yellow : Color.primary)) {
+                    Toggle("High Contrast", isOn: $settings.highContrast)
+                        .foregroundStyle(settings.highContrast ? Color.yellow : Color.primary)
                 }
 
-                Section(header: Text("Text Size")) {
+                Section(header: Text("Text Settings").foregroundColor(settings.highContrast ? Color.yellow : Color.primary)) {
                     HStack {
-                        Text("Font size")
+                        Text("Font Size ")
+                            .foregroundColor(settings.highContrast ? Color.yellow : Color.primary)
                         Spacer()
-                        Slider(value: $settings.fontSize, in: 15...50, step: 1) {
-                            Text("Font Size")
-                        }
+                        Slider(value: $settings.fontSize, in: 15...50, step: 1)
+                            .accentColor(settings.highContrast ? Color.yellow : Color.blue)
                         Text("\(Int(settings.fontSize))")
+                            .foregroundColor(settings.highContrast ? Color.yellow : Color.primary)
                     }
                 }
 
-                Section(header: Text("Information")) {
+                Section(header: Text("Information").foregroundColor(settings.highContrast ? Color.yellow : Color.primary)) {
                     Button(action: {
                         self.showInfo.toggle()
                     }) {
                         HStack {
                             Image(systemName: "info.circle")
+                                .foregroundColor(settings.highContrast ? Color.yellow : Color.primary)
                             Text("About")
+                                .foregroundColor(settings.highContrast ? Color.yellow : Color.primary)
                         }
                     }
                     .sheet(isPresented: $showInfo) {
@@ -46,11 +48,11 @@ struct SettingsView: View {
                     }
                 }
             }
+            .background(settings.highContrast ? Color.black : Color(UIColor.systemBackground))
             .navigationBarTitle("Settings", displayMode: .inline)
             .navigationBarItems(leading: Button("Cancel") {
                 self.presentationMode.wrappedValue.dismiss()
-            })
-            .background(Color(UIColor.systemBackground))
+            }.foregroundColor(settings.highContrast ? Color.yellow : Color.blue))
         }
     }
 }

@@ -18,12 +18,12 @@ struct ContentView: View {
                 ScrollView {
                     ZStack {
                         RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .fill(Color(UIColor.secondarySystemBackground)) // Adaptive background color
+                            .fill(settings.highContrast ? Color.black : Color(UIColor.secondarySystemBackground))
                             .shadow(radius: 3)
                         Text(recognisedText)
                             .font(Font.custom("OpenDyslexic-Regular", size: settings.fontSize))
                             .padding()
-                            .foregroundColor(Color.primary) // Adaptive text color
+                            .foregroundColor(settings.highContrast ? Color.yellow : Color.primary)
                     }
                     .padding()
                 }
@@ -39,7 +39,7 @@ struct ContentView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 50, height: 50)
-                            .foregroundColor(Color.primary.opacity(0.8))
+                            .foregroundColor(settings.highContrast ? Color.yellow : Color.primary.opacity(0.8))
                     }
                     .buttonStyle(PlainButtonStyle())
                     .accessibilityLabel("Start Scanning")
@@ -52,7 +52,7 @@ struct ContentView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 50, height: 50)
-                            .foregroundColor(Color.primary.opacity(0.8))
+                            .foregroundColor(settings.highContrast ? Color.yellow : Color.primary.opacity(0.8))
                     }
                     .buttonStyle(PlainButtonStyle())
                     .disabled(recognisedText == "Tap button to start scanning")
@@ -66,7 +66,7 @@ struct ContentView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 50, height: 50)
-                            .foregroundColor(Color.primary.opacity(0.8))
+                            .foregroundColor(settings.highContrast ? Color.yellow : Color.primary.opacity(0.8))
                     }
                     .accessibilityLabel("Save as PDF")
                     
@@ -79,14 +79,14 @@ struct ContentView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 50, height: 50)
-                            .foregroundColor(Color.primary.opacity(0.8))
+                            .foregroundColor(settings.highContrast ? Color.yellow : Color.primary.opacity(0.8))
                     }
                     .buttonStyle(PlainButtonStyle())
                     .accessibilityLabel("Read Text Aloud")
                 }
                 .padding()
             }
-            .background(Color(UIColor.systemBackground)) // Adaptive background color
+            .background(settings.highContrast ? Color.black : Color(UIColor.systemBackground))
             .navigationBarTitle("Dyscanner")
             .navigationBarItems(trailing: Button(action: {
                 self.showingSettingsView = true
@@ -95,7 +95,7 @@ struct ContentView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 35, height: 35)
-                    .foregroundColor(Color.primary.opacity(0.8))
+                    .foregroundColor(settings.highContrast ? Color.yellow : Color.primary.opacity(0.8))
                     
             })
             .sheet(isPresented: $showingScanningView) {
@@ -106,6 +106,8 @@ struct ContentView: View {
             }
         }
     }
+    
+    
 
     private func copyToClipboard() {
         UIPasteboard.general.string = recognisedText
