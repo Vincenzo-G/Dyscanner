@@ -30,7 +30,7 @@ struct ContentView: View {
 
                 Spacer()
 
-                HStack(spacing: 20) {
+                HStack() {
                     // Camera Button
                     Button(action: {
                         self.showingScanningView = true
@@ -44,6 +44,8 @@ struct ContentView: View {
                     .buttonStyle(PlainButtonStyle())
                     .accessibilityLabel("Start Scanning")
 
+                    Spacer()
+                    
                     // Copy to Clipboard Button
                     Button(action: {
                         self.copyToClipboard()
@@ -57,7 +59,8 @@ struct ContentView: View {
                     .buttonStyle(PlainButtonStyle())
                     .disabled(recognisedText == "Tap button to start scanning")
                     .accessibilityLabel("Copy to Clipboard")
-
+                    Spacer()
+                    
                     // SaveToPDF Button
                     Button(action: {
                         self.saveToPDF()
@@ -69,7 +72,7 @@ struct ContentView: View {
                             .foregroundColor(settings.highContrast ? Color.yellow : Color.primary.opacity(0.8))
                     }
                     .accessibilityLabel("Save as PDF")
-                    
+                    Spacer()
                     
                     // Voiceover Button
                     Button(action: {
@@ -85,6 +88,7 @@ struct ContentView: View {
                     .accessibilityLabel("Read Text Aloud")
                 }
                 .padding()
+                .padding(.horizontal, 20)
             }
             .background(settings.highContrast ? Color.black : Color(UIColor.systemBackground))
             .navigationBarTitle("Dyscanner")
@@ -94,9 +98,9 @@ struct ContentView: View {
                 Image(systemName: "gearshape.fill")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 35, height: 35)
+                    .frame(width: 44, height: 44)
                     .foregroundColor(settings.highContrast ? Color.yellow : Color.primary.opacity(0.8))
-                    
+                    .padding(.trailing, 5)
             })
             .sheet(isPresented: $showingScanningView) {
                 ScanDocumentView(recognisedText: self.$recognisedText)
