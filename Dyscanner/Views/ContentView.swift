@@ -4,6 +4,7 @@ import Foundation
 import PDFKit
 
 struct ContentView: View {
+    @EnvironmentObject var settings: Settings
     @State private var recognisedText = "This is where the scanned text will appear.\n\nTo start the process, tap the camera button below."
     @State private var showingScanningView = false
     @State private var showingSettingsView = false
@@ -20,7 +21,7 @@ struct ContentView: View {
                             .fill(Color(UIColor.secondarySystemBackground)) // Adaptive background color
                             .shadow(radius: 3)
                         Text(recognisedText)
-                            .font(Font.custom("OpenDyslexic-Regular", size: 25))
+                            .font(Font.custom("OpenDyslexic-Regular", size: settings.fontSize))
                             .padding()
                             .foregroundColor(Color.primary) // Adaptive text color
                     }
@@ -38,7 +39,7 @@ struct ContentView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 50, height: 50)
-                            .foregroundColor(.blue)
+                            .foregroundColor(Color.primary.opacity(0.8))
                     }
                     .buttonStyle(PlainButtonStyle())
                     .accessibilityLabel("Start Scanning")
@@ -51,7 +52,7 @@ struct ContentView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 50, height: 50)
-                            .foregroundColor(.green)
+                            .foregroundColor(Color.primary.opacity(0.8))
                     }
                     .buttonStyle(PlainButtonStyle())
                     .disabled(recognisedText == "Tap button to start scanning")
@@ -65,7 +66,7 @@ struct ContentView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 50, height: 50)
-                            .foregroundColor(.red)
+                            .foregroundColor(Color.primary.opacity(0.8))
                     }
                     .accessibilityLabel("Save as PDF")
                     
@@ -78,7 +79,7 @@ struct ContentView: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 50, height: 50)
-                            .foregroundColor(.orange)
+                            .foregroundColor(Color.primary.opacity(0.8))
                     }
                     .buttonStyle(PlainButtonStyle())
                     .accessibilityLabel("Read Text Aloud")
@@ -91,7 +92,11 @@ struct ContentView: View {
                 self.showingSettingsView = true
             }) {
                 Image(systemName: "gearshape.fill")
-                    .foregroundColor(.blue)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 35, height: 35)
+                    .foregroundColor(Color.primary.opacity(0.8))
+                    
             })
             .sheet(isPresented: $showingScanningView) {
                 ScanDocumentView(recognisedText: self.$recognisedText)
@@ -111,24 +116,42 @@ struct ContentView: View {
         utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
         speechSynthesizer.speak(utterance)
     }
-    
+
     private func saveToPDF() {
-        // Generate PDF Data
+        // Ensure the custom font is loaded
+        guard let customFont = UIFont(name: "OpenDyslexic-Regular", size: settings.fontSize) else {
+            print("Failed to load OpenDyslexic-Regular font.")
+            return
+        }
+        
+        // Generate PDF Metadata
         let pdfMetaData = [
             kCGPDFContextCreator: "Dyscanner",
             kCGPDFContextAuthor: "User"
         ]
         let format = UIGraphicsPDFRendererFormat()
         format.documentInfo = pdfMetaData as [String: Any]
-
+        
+        // Set PDF Page Size
         let pageWidth = 612.0
         let pageHeight = 792.0
         let renderer = UIGraphicsPDFRenderer(bounds: CGRect(x: 0, y: 0, width: pageWidth, height: pageHeight), format: format)
-
+        
         let pdfData = renderer.pdfData { context in
             context.beginPage()
-            let attributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 18)]
-            recognisedText.draw(in: CGRect(x: 20, y: 20, width: pageWidth - 40, height: pageHeight - 40), withAttributes: attributes)
+            
+            // Set up attributes for text rendering
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.alignment = .left
+            
+            let attributes: [NSAttributedString.Key: Any] = [
+                .font: customFont,
+                .paragraphStyle: paragraphStyle
+            ]
+            
+            // Define a text rectangle and render text
+            let textRect = CGRect(x: 20, y: 20, width: pageWidth - 40, height: pageHeight - 40)
+            recognisedText.draw(in: textRect, withAttributes: attributes)
         }
         
         // Save PDF with Document Picker
@@ -150,21 +173,11 @@ struct ContentView: View {
         }
     }
 
-}
 
-class DocumentPickerDelegate: NSObject, UIDocumentPickerDelegate {
-    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        if let savedURL = urls.first {
-            print("PDF saved at: \(savedURL)")
-        }
-    }
-    
-    func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
-        print("Document picker was cancelled.")
-    }
 }
 
 #Preview {
     ContentView()
+        .environmentObject(Settings())
 }
 

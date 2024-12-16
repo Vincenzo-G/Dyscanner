@@ -7,9 +7,8 @@
 
 import SwiftUI
 
-
-
 struct SettingsView: View {
+    @EnvironmentObject var settings: Settings
     @State private var fontSize: Double = 25
     @State private var highContrast: Bool = false
     @State private var showInfo: Bool = false
@@ -24,12 +23,12 @@ struct SettingsView: View {
 
                 Section(header: Text("Text Size")) {
                     HStack {
-                        Text("Font Size")
+                        Text("Font size")
                         Spacer()
-                        Slider(value: $fontSize, in: 15...50, step: 1) {
+                        Slider(value: $settings.fontSize, in: 15...50, step: 1) {
                             Text("Font Size")
                         }
-                        Text("\(Int(fontSize))")
+                        Text("\(Int(settings.fontSize))")
                     }
                 }
 
@@ -39,7 +38,7 @@ struct SettingsView: View {
                     }) {
                         HStack {
                             Image(systemName: "info.circle")
-                            Text("About This App")
+                            Text("About")
                         }
                     }
                     .sheet(isPresented: $showInfo) {
@@ -78,4 +77,5 @@ struct InfoView: View {
 
 #Preview {
     SettingsView()
+        .environmentObject(Settings())
 }
