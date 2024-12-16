@@ -7,7 +7,8 @@
 
 import SwiftUI
 
-// Updated SettingsView with accessibility, contrast, font size options, and cancel button
+
+
 struct SettingsView: View {
     @State private var fontSize: Double = 25
     @State private var highContrast: Bool = false
