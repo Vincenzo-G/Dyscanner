@@ -1,75 +1,107 @@
-//
-//  ContentView.swift
-//  Dyscanner4.0
-//
-//  Created by Vincenzo Gerelli on 10/12/24.
-//
-
 import SwiftUI
+import AVFoundation
 import Foundation
 
 struct ContentView: View {
-    
-    @State private var recognisedText = "Press Start Scanning Button"
+    @State private var recognisedText = "This is where the scanned text will appear.\n\nTo start the process, tap the camera button below."
     @State private var showingScanningView = false
+    @State private var showingSettingsView = false
     let buttonHeight: CGFloat = 50
-    
+
+    private let speechSynthesizer = AVSpeechSynthesizer()
+
     var body: some View {
-        NavigationView{
+        NavigationView {
             VStack {
                 ScrollView {
                     ZStack {
                         RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .fill(Color.white)
+                            .fill(Color(UIColor.secondarySystemBackground)) // Adaptive background color
                             .shadow(radius: 3)
                         Text(recognisedText)
                             .font(Font.custom("OpenDyslexic-Regular", size: 25))
                             .padding()
-                        
+                            .foregroundColor(Color.primary) // Adaptive text color
                     }
                     .padding()
                 }
-                
+
                 Spacer()
-                
+
                 HStack(spacing: 20) {
-                    
-                    Button(action:{
+                    // Camera Button
+                    Button(action: {
                         self.showingScanningView = true
-                    }){
-                        Text("Start Scanning")
-                            .frame(width: 150, height: buttonHeight)
-                            .padding()
-                            .foregroundColor(.white)
-                            .background(Capsule().fill(Color.blue))
+                    }) {
+                        Image(systemName: "camera.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 50, height: 50)
+                            .foregroundColor(.blue)
                     }
-                    
-                    Button(action:{
+                    .buttonStyle(PlainButtonStyle())
+                    .accessibilityLabel("Start Scanning")
+
+                    // Copy to Clipboard Button
+                    Button(action: {
                         self.copyToClipboard()
-                    }){
-                        Text("Copy to Clipboard")
-                            .frame(width: 150, height: buttonHeight)
-                            .padding()
-                            .foregroundColor(.white)
-                            .background(Capsule().fill(Color.green))
+                    }) {
+                        Image(systemName: "doc.on.clipboard.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 50, height: 50)
+                            .foregroundColor(.green)
                     }
+                    .buttonStyle(PlainButtonStyle())
                     .disabled(recognisedText == "Tap button to start scanning")
+                    .accessibilityLabel("Copy to Clipboard")
+
+                    // Voiceover Button
+                    Button(action: {
+                        self.speakText()
+                    }) {
+                        Image(systemName: "speaker.wave.2.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 50, height: 50)
+                            .foregroundColor(.orange)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .accessibilityLabel("Read Text Aloud")
                 }
                 .padding()
             }
-            .background(Color.gray.opacity(0.1))
+            .background(Color(UIColor.systemBackground)) // Adaptive background color
             .navigationBarTitle("Dyscanner")
-            .sheet(isPresented: $showingScanningView){
+            .navigationBarItems(trailing: Button(action: {
+                self.showingSettingsView = true
+            }) {
+                Image(systemName: "gearshape.fill")
+                    .foregroundColor(.blue)
+            })
+            .sheet(isPresented: $showingScanningView) {
                 ScanDocumentView(recognisedText: self.$recognisedText)
+            }
+            .sheet(isPresented: $showingSettingsView) {
+                SettingsView()
             }
         }
     }
-    
+
     private func copyToClipboard() {
         UIPasteboard.general.string = recognisedText
     }
+
+    private func speakText() {
+        let utterance = AVSpeechUtterance(string: recognisedText)
+        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+        speechSynthesizer.speak(utterance)
+    }
 }
+
+
 
 #Preview {
     ContentView()
 }
+
