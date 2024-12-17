@@ -8,6 +8,7 @@ struct ContentView: View {
     @State private var recognisedText = "This is where the scanned text will appear.\n\nTo start the process, tap the camera button below."
     @State private var showingScanningView = false
     @State private var showingSettingsView = false
+    @State private var showCopiedOverlay = false
     let buttonHeight: CGFloat = 50
 
     private let speechSynthesizer = AVSpeechSynthesizer()
@@ -47,18 +48,41 @@ struct ContentView: View {
                     Spacer()
                     
                     // Copy to Clipboard Button
-                    Button(action: {
-                        self.copyToClipboard()
-                    }) {
-                        Image(systemName: "doc.on.clipboard.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 50, height: 50)
-                            .foregroundColor(settings.highContrast ? Color.yellow : Color.primary.opacity(0.8))
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    .disabled(recognisedText == "Tap button to start scanning")
-                    .accessibilityLabel("Copy to Clipboard")
+                    ZStack {
+                                // Main Button
+                                Button(action: {
+                                    copyToClipboard()
+                                    withAnimation {
+                                        showCopiedOverlay = true
+                                    }
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                        withAnimation {
+                                            showCopiedOverlay = false
+                                        }
+                                    }
+                                }) {
+                                    Image(systemName: "doc.on.clipboard.fill")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 50, height: 50)
+                                        .foregroundColor(settings.highContrast ? Color.yellow : Color.primary.opacity(0.8))
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                                .disabled(recognisedText == "Tap button to start scanning")
+                                .accessibilityLabel("Copy to Clipboard")
+
+                                // Overlay
+                                if showCopiedOverlay {
+                                    Text("COPIED")
+                                        .font(.caption)
+                                        .background(Color.black.opacity(0.8))
+                                        .cornerRadius(10)
+                                        .offset(y: -55)
+                                        .foregroundColor(.white)
+                                        .transition(.opacity)
+                                        .zIndex(1) // Ensure overlay appears above other content
+                                }
+                            }
                     Spacer()
                     
                     // SaveToPDF Button
