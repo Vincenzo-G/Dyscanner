@@ -36,11 +36,16 @@ struct ContentView: View {
                     Button(action: {
                         self.showingScanningView = true
                     }) {
-                        Image(systemName: "camera.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 50, height: 50)
-                            .foregroundColor(settings.highContrast ? Color.yellow : Color.primary.opacity(0.8))
+                        VStack {
+                            Image(systemName: "camera.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 50, height: 50)
+                                .foregroundColor(settings.highContrast ? Color.yellow : Color.primary.opacity(0.8))
+                            Text("SCAN")
+                                .font(Font.custom("OpenDyslexic-Regular", size: 14))
+                                .foregroundColor(settings.highContrast ? Color.yellow : Color.primary)
+                        }
                     }
                     .buttonStyle(PlainButtonStyle())
                     .accessibilityLabel("Start Scanning")
@@ -61,11 +66,16 @@ struct ContentView: View {
                                         }
                                     }
                                 }) {
-                                    Image(systemName: "doc.on.clipboard.fill")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 50, height: 50)
-                                        .foregroundColor(settings.highContrast ? Color.yellow : Color.primary.opacity(0.8))
+                                    VStack {
+                                        Image(systemName: "doc.on.clipboard.fill")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 50, height: 50)
+                                            .foregroundColor(settings.highContrast ? Color.yellow : Color.primary.opacity(0.8))
+                                        Text("COPY")
+                                            .font(Font.custom("OpenDyslexic-Regular", size: 14))
+                                            .foregroundColor(settings.highContrast ? Color.yellow : Color.primary)
+                                    }
                                 }
                                 .buttonStyle(PlainButtonStyle())
                                 .disabled(recognisedText == "Tap button to start scanning")
@@ -89,11 +99,16 @@ struct ContentView: View {
                     Button(action: {
                         self.saveToPDF()
                     }) {
-                        Image(systemName: "square.and.arrow.down.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 50, height: 50)
-                            .foregroundColor(settings.highContrast ? Color.yellow : Color.primary.opacity(0.8))
+                        VStack {
+                            Image(systemName: "square.and.arrow.down.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 50, height: 50)
+                                .foregroundColor(settings.highContrast ? Color.yellow : Color.primary.opacity(0.8))
+                            Text("SAVE")
+                                .font(Font.custom("OpenDyslexic-Regular", size: 14))
+                                .foregroundColor(settings.highContrast ? Color.yellow : Color.primary)
+                        }
                     }
                     .accessibilityLabel("Save as PDF")
                     Spacer()
@@ -102,11 +117,16 @@ struct ContentView: View {
                     Button(action: {
                         self.speakText()
                     }) {
-                        Image(systemName: "speaker.wave.2.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 50, height: 50)
-                            .foregroundColor(settings.highContrast ? Color.yellow : Color.primary.opacity(0.8))
+                        VStack {
+                            Image(systemName: "speaker.wave.2.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 50, height: 50)
+                                .foregroundColor(settings.highContrast ? Color.yellow : Color.primary.opacity(0.8))
+                            Text("READ")
+                                .font(Font.custom("OpenDyslexic-Regular", size: 14))
+                                .foregroundColor(settings.highContrast ? Color.yellow : Color.primary)
+                        }
                     }
                     .buttonStyle(PlainButtonStyle())
                     .accessibilityLabel("Read Text Aloud")
